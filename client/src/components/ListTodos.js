@@ -1,4 +1,5 @@
 import React, { Fragment , useState, useEffect} from 'react'
+import EditTodos from './EditTodos';
 const ListTodos = () => {
 
     const [todos, setTodos] = useState([]);
@@ -16,6 +17,20 @@ const ListTodos = () => {
             
         }
     }
+
+    const deleteTodo = async id => {
+        try {
+          const deleteTodo = await fetch(`http://localhost:5000/todos/${id}`, {
+            method: "DELETE"
+          });
+          //filter sets up a condition. If the todos fit the condition, it will only return those todos
+          //so show every todo but the one i deleted 
+          setTodos(todos.filter(todo => todo.todo_id !== id));
+        } catch (err) {
+          console.error(err.message);
+        }
+      };
+
     useEffect(() => {
         getTodos();
     }, []);
@@ -37,8 +52,12 @@ const ListTodos = () => {
                     <tr key={todo.todo_id}>
 
                 <td>{todo.description}</td>
-                <td>Edit Button</td>
-                <td>Delete Button</td>
+                <td>
+                    <EditTodos todo={todo}/>
+                </td>
+                <td>
+                    <button className="btn btn-danger" onClick={() => deleteTodo(todo.todo_id)}>Delete Button</button>
+                </td>
 
                     </tr>
                 ))}
